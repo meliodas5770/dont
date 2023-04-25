@@ -17,7 +17,7 @@ import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreateAddressArgs } from "./CreateAddressArgs";
 import { UpdateAddressArgs } from "./UpdateAddressArgs";
@@ -36,12 +36,8 @@ export class AddressResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @Public()
   @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: "Address",
-    action: "read",
-    possession: "any",
-  })
   async _addressesMeta(
     @graphql.Args() args: AddressFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -55,26 +51,16 @@ export class AddressResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [Address])
-  @nestAccessControl.UseRoles({
-    resource: "Address",
-    action: "read",
-    possession: "any",
-  })
   async addresses(
     @graphql.Args() args: AddressFindManyArgs
   ): Promise<Address[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => Address, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "Address",
-    action: "read",
-    possession: "own",
-  })
   async address(
     @graphql.Args() args: AddressFindUniqueArgs
   ): Promise<Address | null> {
@@ -147,13 +133,8 @@ export class AddressResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.ResolveField(() => [Customer])
-  @nestAccessControl.UseRoles({
-    resource: "Customer",
-    action: "read",
-    possession: "any",
-  })
   async customers(
     @graphql.Parent() parent: Address,
     @graphql.Args() args: CustomerFindManyArgs

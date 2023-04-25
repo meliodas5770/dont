@@ -20,7 +20,7 @@ import * as nestAccessControl from "nest-access-control";
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { AddressService } from "../address.service";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { Public } from "../../decorators/public.decorator";
 import { AddressCreateInput } from "./AddressCreateInput";
 import { AddressWhereInput } from "./AddressWhereInput";
 import { AddressWhereUniqueInput } from "./AddressWhereUniqueInput";
@@ -65,15 +65,10 @@ export class AddressControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Address] })
   @ApiNestedQuery(AddressFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "Address",
-    action: "read",
-    possession: "any",
-  })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
@@ -94,15 +89,10 @@ export class AddressControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Address })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "Address",
-    action: "read",
-    possession: "own",
-  })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
@@ -209,14 +199,9 @@ export class AddressControllerBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @common.Get("/:id/customers")
   @ApiNestedQuery(CustomerFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "Customer",
-    action: "read",
-    possession: "any",
-  })
   async findManyCustomers(
     @common.Req() request: Request,
     @common.Param() params: AddressWhereUniqueInput

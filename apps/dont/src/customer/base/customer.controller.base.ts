@@ -20,7 +20,7 @@ import * as nestAccessControl from "nest-access-control";
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { CustomerService } from "../customer.service";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { Public } from "../../decorators/public.decorator";
 import { CustomerCreateInput } from "./CustomerCreateInput";
 import { CustomerWhereInput } from "./CustomerWhereInput";
 import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
@@ -78,15 +78,10 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "Customer",
-    action: "read",
-    possession: "any",
-  })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
@@ -112,15 +107,10 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "Customer",
-    action: "read",
-    possession: "own",
-  })
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
@@ -250,14 +240,9 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @common.Get("/:id/orders")
   @ApiNestedQuery(OrderFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "Order",
-    action: "read",
-    possession: "any",
-  })
   async findManyOrders(
     @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput

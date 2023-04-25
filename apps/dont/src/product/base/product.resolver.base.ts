@@ -17,7 +17,7 @@ import * as nestAccessControl from "nest-access-control";
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreateProductArgs } from "./CreateProductArgs";
 import { UpdateProductArgs } from "./UpdateProductArgs";
@@ -36,12 +36,8 @@ export class ProductResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @Public()
   @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: "Product",
-    action: "read",
-    possession: "any",
-  })
   async _productsMeta(
     @graphql.Args() args: ProductFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -55,26 +51,16 @@ export class ProductResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [Product])
-  @nestAccessControl.UseRoles({
-    resource: "Product",
-    action: "read",
-    possession: "any",
-  })
   async products(
     @graphql.Args() args: ProductFindManyArgs
   ): Promise<Product[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => Product, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "Product",
-    action: "read",
-    possession: "own",
-  })
   async product(
     @graphql.Args() args: ProductFindUniqueArgs
   ): Promise<Product | null> {
@@ -147,13 +133,8 @@ export class ProductResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.ResolveField(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: "Order",
-    action: "read",
-    possession: "any",
-  })
   async orders(
     @graphql.Parent() parent: Product,
     @graphql.Args() args: OrderFindManyArgs
